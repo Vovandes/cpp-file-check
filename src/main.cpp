@@ -1,4 +1,5 @@
 #include <charconv>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -85,8 +86,8 @@ bool write_report(const std::string& path, const std::vector<Row>& rows) {
             ++rejected;
         }
     }
-    out << "accepted: " << accepted << '\n';
-    out << "rejected: " << rejected << '\n';
+    out << "accepted " << accepted << '\n';
+    out << "rejected " << rejected << '\n';
     for (const Row& row : rows) {
         if (row.reason == "comment") {
             continue;
@@ -99,16 +100,24 @@ bool write_report(const std::string& path, const std::vector<Row>& rows) {
         }
         out << '\n';
     }
-    return static_cast<bool>(out);
+    out.flush();
+    out.close();
+    return !out.fail();
 }
 
 int main(int argc, char** argv) {
-    if (argc < 2) {
+    if (argc < 2 || argc > 3) {
         std::cerr << "usage: cpp-file-check <input.txt> [report.txt]\n";
         return 1;
     }
     const std::string input_path = argv[1];
-    const std::string report_path = argc >= 3 ? argv[2] : "report.txt";
+    const std::string report_path = argc == 3 ? argv[2] : "report.txt";
+
+    std::error_code path_error;
+    if (std::filesystem::is_directory(input_path, path_error)) {
+        std::cerr << "input is a directory: " << input_path << '\n';
+        return 2;
+    }
 
     std::ifstream input(input_path);
     if (!input) {
