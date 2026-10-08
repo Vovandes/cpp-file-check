@@ -4,6 +4,34 @@ C++17 console tool: read a text file, check numbers, write a report.
 
 Public sample for small C++ tasks. No customer data.
 
+## Инструкция
+
+Консольная утилита на C++17. Читает текстовый файл, проверяет числа, пишет отчёт. Чужих данных в репозитории нет.
+
+Что делает:
+
+- Одна строка — одно значение.
+- Принимает число со знаком и экспонентой: `10.5`, `-3`, `1e-2`.
+- Строку, где первый непробельный символ `#`, пропускает.
+- Пустую строку, не число и хвост после числа (`12.0 extra`) пишет в отказ.
+- Пишет `report.txt`: сколько принято, сколько отклонено и причина по каждой строке.
+
+Сборка в Visual Studio 2022: открыть папку репозитория, CMake подхватит `CMakeLists.txt`.
+
+Из командной строки, из корня репозитория:
+
+```
+cmake -S . -B build
+cmake --build build --config Release
+build\Release\cpp-file-check.exe samples\input.txt report.txt
+```
+
+Если генератор не Visual Studio, exe лежит в `build\cpp-file-check.exe`, не в `build\Release\`.
+
+`std::from_chars` для `double` нужен Visual Studio 2019 16.4 или новее, либо GCC 11+.
+
+На примере `samples/input.txt` ожидается accepted 4 (`10.5`, `-3`, `1e-2`, `4.25`) и rejected 3 (пустая строка, `abc`, хвост после числа).
+
 ## What it does
 
 - One value per line.
